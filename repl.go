@@ -10,10 +10,10 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
-func startRepl() {
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -36,8 +36,10 @@ func startRepl() {
 			continue
 		}
 
-		command.callback()
-
+		err := command.callback(cfg)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -58,6 +60,16 @@ func getCommands() map[string]cliCommand {
 			name:        "exit",
 			description: "Exits the Pokedex CLI",
 			callback:    commandExit,
+		},
+		"map": {
+			name:        "map",
+			description: "Shows 20 Pokemon location areas",
+			callback:    callbackMap,
+		},
+		"mapb": {
+			name:        "map",
+			description: "Shows 20 Pokemon location areas",
+			callback:    callbackMapb,
 		},
 	}
 }
