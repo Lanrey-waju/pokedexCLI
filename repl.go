@@ -10,7 +10,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 func startRepl(cfg *config) {
@@ -27,6 +27,10 @@ func startRepl(cfg *config) {
 		}
 
 		commandName := cleaned[0]
+		args := []string{}
+		if len(cleaned) > 1 {
+			args = cleaned[1:]
+		}
 
 		availableCommands := getCommands()
 		command, ok := availableCommands[commandName]
@@ -36,7 +40,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		err := command.callback(cfg)
+		err := command.callback(cfg, args...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -56,11 +60,6 @@ func getCommands() map[string]cliCommand {
 			description: "Displays help menu",
 			callback:    commandHelp,
 		},
-		"exit": {
-			name:        "exit",
-			description: "Exits the Pokedex CLI",
-			callback:    commandExit,
-		},
 		"map": {
 			name:        "map",
 			description: "Shows 20 Pokemon location areas",
@@ -70,6 +69,26 @@ func getCommands() map[string]cliCommand {
 			name:        "map",
 			description: "Shows 20 Pokemon location areas",
 			callback:    callbackMapb,
+		},
+		"explore": {
+			name:        "explore {location_area}",
+			description: "Prints the pokemoon in an area",
+			callback:    callbackExplore,
+		},
+		"catch": {
+			name:        "catch {pokemon_name}",
+			description: "Attempts to catch the pokemoon",
+			callback:    callbackCatch,
+		},
+		"inspect": {
+			name:        "inspect {pokemon_name}",
+			description: "Attempts to catch the pokemoon",
+			callback:    callbackInspect,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exits the Pokedex CLI",
+			callback:    commandExit,
 		},
 	}
 }
